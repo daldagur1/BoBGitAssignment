@@ -1,4 +1,4 @@
-name: Python
+name: Python Version Info
 
 on: workflow_dispatch
 
@@ -12,24 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Display Python version
-        id: display-version
-        run: |
-          echo "::set-output name=version::$(python -c 'import sys; print(sys.version)')"
-      - name: Save output as artifact
-        uses: actions/upload-artifact@v2
+        run: python -c "import sys; print(sys.version)" > version_info.txt
+      - name: Upload Python Version Info
+        uses: actions/upload-artifact@v3
         with:
-          name: output-${{ matrix.python-version }}
-          path: output-${{ matrix.python-version }}.txt
-          if: ${{ always() }}
-      - name: Save version as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: version-${{ matrix.python-version }}
-          path: version-${{ matrix.python-version }}.txt
-          if: ${{ always() }}
-        env:
-          PYTHON_VERSION: ${{ steps.display-version.outputs.version }}
+          name: python-version-info-${{ matrix.python-version }}
+          path: version_info.txt
